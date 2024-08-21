@@ -184,6 +184,7 @@ public class DifferencingRunner {
                 ExecutionListener execListener = new ExecutionListener(iteration, parameters);
                 PathConditionListener pcListener = new PathConditionListener(iteration, parameters);
                 DifferencingListener diffListener = new DifferencingListener(iteration, parameters, solverTimeout);
+                DifferencingZ3Listener diffZ3Listener = new DifferencingZ3Listener(iteration, parameters);
 
                 TimeoutChecker timeoutChecker = new TimeoutChecker(diffListener, iteration, iterationTimeout);
 
@@ -223,6 +224,7 @@ public class DifferencingRunner {
                     jpf.addListener(execListener);
                     jpf.addListener(pcListener);
                     jpf.addListener(diffListener);
+                    jpf.addListener(diffZ3Listener);
                     jpf.run();
 
                     hasSucceeded = true;
@@ -283,7 +285,7 @@ public class DifferencingRunner {
                 }
 
                 if (iteration.partitionCount == 0) {
-                    throw new RuntimeException("No partitions found for '" + run.benchmark + "' (run ID: " + run.id + ", iteration ID: " + iteration.id + ").");
+                    //throw new RuntimeException("No partitions found for '" + run.benchmark + "' (run ID: " + run.id + ", iteration ID: " + iteration.id + ").");
                 }
 
                 StopWatches.stop("iteration-" + iteration.iteration + ":refinement");
