@@ -1,6 +1,7 @@
 **/*
 
 !benchmarks/**/*
+!examples/**/*
 !docker/**/*
 
 !Implementation/**/*

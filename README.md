@@ -88,6 +88,34 @@ To include additional tools and timeouts in the analysis, or to execute multiple
 
 Running Java in AMD64 Docker containers on Apple Silicon (i.e., M1/M2/... Macs) can be quite finnicky at times (see, e.g. https://github.com/docker/for-mac/issues/7006). To run the benchmark without Docker, you need to have the following installed: a Java 8 JDK (e.g., https://openjdk.org/install/) that has to be set as the system-wide default JDK, and the sqlean shell (https://github.com/nalgeon/sqlean/blob/main/docs/shell.md), which needs to be aliased as `sqlite3` on the machine. With those two installed, execute the `Implementation/RunningBenchmarks.sh` file to start the benchmark. Collected data can then be viewed as usual by accessing the "/pasda/sqlite.db" database through Adminer.
 
+### Checking a Single Program Pair
+
+1. Build the Docker image by running the following command in the root directory of PASDA:
+
+    ```
+    docker build -t pasda .
+    ```
+
+2. Run `CheckPair.sh` on the example pair in `examples/bank/loan/NEq`, which the image provides below its `benchmarks` directory:
+
+    ```
+    docker run --rm pasda ./CheckPair.sh bank/loan/NEq
+    ```
+
+    The two versions in this directory differ in the limit `FULL`. The pair in `examples/bank/loan/Eq` contains the corrected second version.
+
+3. To check your own pair, put the two versions of the method into a directory as `oldV.java` and `newV.java`. Both files have to follow the format of the example: each declares a package and contains one class (`oldV` or `newV`) with a static method `snippet`, which has the same signature in both versions. Mount the directory into the `benchmarks` directory of a container:
+
+    ```
+    docker run --rm -v "/path/to/pair:/home/pasda/benchmarks/my/pair/NEq" pasda ./CheckPair.sh my/pair/NEq
+    ```
+
+    The path below `benchmarks` has to consist of three directories, the second or third of which is `Eq` or `NEq`. This directory names the result that you expect. PASDA stores it next to its verdict and does not use it in the analysis, so pick either one if you do not know the result.
+
+`CheckPair.sh` prints the verdict of the run and of each of its iterations. For each partition of the iteration that the verdict is taken from, it prints the verdict, the answers of the three solver queries, the lines that the partition covers in both versions, and the path condition. The timeout in seconds (default: 300) and the depth limit (default: 10) can be passed as second and third argument.
+
+The product programs, path conditions and symbolic execution logs of the run are written to the `instrumented` directory next to the two versions. To keep the SQLite database of the run, mount a directory to `/home/pasda/implementation/analysis/results`.
+
 ### Exploring the Implementation
 
 PASDAs implementation can be found in `Implementation/src/main/java/differencing`.
