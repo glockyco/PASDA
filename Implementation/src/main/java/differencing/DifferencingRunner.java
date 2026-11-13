@@ -37,6 +37,14 @@ public class DifferencingRunner {
         // - [tool]: SE, DSEs, Imp, ARDiffs, ARDiffR, or ARDiffH3.
         // - [timeout]: Maximum time to use across all iterations of the run.
         // - [depth_limit]: Maximum number of loop iterations to analyze.
+
+        // The refinement heuristics of GradDiffInstrumentation run the z3 binary
+        // of the working directory. Runner.setup selects it for the base tools.
+        if (SystemUtils.IS_OS_LINUX) {
+            new File(ProjectPaths.z3).setExecutable(true);
+            ProjectPaths.z3 = "./z3";
+        }
+
         new DifferencingRunner().run(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]));
     }
 
