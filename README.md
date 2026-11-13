@@ -209,3 +209,9 @@ To fix the described bugs, we modified the Z3 queries that are used by ARDiff to
 (check-sat)
 (get-model)
 ```
+
+---
+
+## License
+
+PASDA is available under the MIT license. `LICENSE` covers the code of PASDA, which is in `Implementation/src/main/java/differencing` and its resources, and the scripts and examples of this repository. `ARDiff-LICENSE` covers the code that PASDA takes over from ARDiff.
