@@ -157,6 +157,10 @@ public class SatisfiabilityChecker implements AutoCloseable {
         //    definition as well.
 
         String query = solver.toString();
+        // Z3 knows no atan2 of one argument, which is how ModelToZ3Transformer
+        // applies it, so a query with atan2 fails here and the run ends in ERROR.
+        // Keeping the declaration instead would drop the second argument of
+        // Math.atan2 from the query.
         query = query.replaceAll("\\(declare-fun (?:sin|cos|tan|asin|acos|atan2|atan) \\(Real\\) Real\\)", "");
 
         Solver s = this.context.mkSolver();

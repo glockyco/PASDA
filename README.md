@@ -131,6 +131,19 @@ Code outside the `differencing` namespace belongs to the modified / fixed ARDiff
 
 ---
 
+## Known Limitations
+
+The following limitations apply to the current version. The source named at the end of each item is where the behavior comes from.
+
+- An `EQ` verdict holds for the paths that Symbolic PathFinder (SPF) explores. SPF follows a branch only if its constraint solver, Coral, finds an input for it. When Coral finds none, SPF drops the branch, whether the branch is infeasible or Coral's search failed, and neither the report nor the database lists dropped branches. With `symbolic.debug = true` in the configuration template, the SPF log in the `instrumented` directory shows Coral's answer for every branch. This applies to all tools. (`symbolic.dp=coral` in `Implementation/src/main/resources/templates/DifferencingConfiguration.ftl` for the partition-based tools, `--s coral` in `Implementation/RunningBenchmarks.sh` for the summary-based ones)
+- The Z3 queries of the partition-based tools model Java numbers as mathematical integers and reals, so their verdicts do not account for overflow and rounding. `Math.exp(x)` becomes the power `2.718281828459045^x`, and `Math.log` stays an uninterpreted function, as in ARDiff. (`differencing.transformer.ModelToZ3Transformer`, `differencing.SatisfiabilityChecker`)
+- The partition-based tools end with `ERROR` for a method that calls `Math.atan2`, because Z3 rejects the query that contains it. (`differencing.SatisfiabilityChecker.removeFuncDeclsForBuiltIns`)
+- The product program compares the return values of the two versions and the types of the exceptions that they throw. Side effects, such as changed fields or arguments, do not count as differences. (`Implementation/src/main/resources/templates/DifferencingDriverClass.ftl`, `differencing.DifferencingListener`)
+- The front end, which all tools share, aligns the two versions line by line. It fails with a compilation error when their statements differ in structure, for example when one version returns a conditional expression where the other uses `if` statements. `CheckPair.sh` then reports that the two versions could not be prepared. (`equiv.checking.ChangeExtractor`)
+- In the partition-based tools, a path that reaches the depth limit of the search ends without outputs as a `DEPTH_LIMITED` partition, so a pair with such a path is never `EQ`. (`search.depth_limit` in `DifferencingConfiguration.ftl`, `differencing.classification.IterationClassifier`)
+
+---
+
 ## ARDiff Bugs and Fixes
 
 While working with ARDiff, we identified two implementation bugs that cause ARDiff to report false positive NEQ results for a small subset of programs. In the following, we describe these bugs and how we fixed them. The example that we use to demonstrate the bugs is Listing 1 from the paper:

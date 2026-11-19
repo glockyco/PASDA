@@ -16,6 +16,7 @@ symbolic.optimizechoices = false
 symbolic.lazy=on
 symbolic.arrays=true
 symbolic.strings = true
+<#-- Coral decides which branches SPF follows. SPF drops a branch for which Coral finds no input, also a feasible one. -->
 symbolic.dp=coral
 symbolic.string_dp_timeout_ms=${timeout?string.computer}
 search.depth_limit=${depthLimit?string.computer}
